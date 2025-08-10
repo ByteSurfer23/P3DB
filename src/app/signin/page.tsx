@@ -5,7 +5,12 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase"; // make sure you export `db` (Firestore) too
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore";
+
 import {
   Form,
   FormField,
@@ -33,10 +38,33 @@ export default function SignInPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/search");
+      // 1. Sign in with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      // 2. Get user document from Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        console.error("User document not found!");
+        // You might want to sign out the user and show an error message here
+        return;
+      }
+
+      // 3. Check `admin` flag in user doc
+      const userData = userDocSnap.data();
+      const isAdmin = userData.admin === true;
+
+      // 4. Redirect based on admin flag
+      if (isAdmin) {
+        router.push("/admin");
+      } else {
+        router.push("/search");
+      }
     } catch (error) {
       console.error("Sign in error:", error);
+      // Optionally show a user-friendly error message here
     }
   };
 
