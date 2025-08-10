@@ -62,6 +62,7 @@ export default function SignUpForm() {
 
       await setDoc(doc(db, "users", user.uid), {
         ...values,
+        admin: false,        // <-- Always set admin to false here
         createdAt: serverTimestamp(),
       });
 
@@ -97,27 +98,33 @@ export default function SignUpForm() {
           )}
         />
 
-        {["name", "email", "password", "location", "organization", "role"].map((fieldName) => (
-          <FormField
-            key={fieldName}
-            control={form.control}
-            name={fieldName as keyof z.infer<typeof formSchema>}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type={fieldName === "password" ? "password" : "text"}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
+        {["name", "email", "password", "location", "organization", "role"].map(
+          (fieldName) => (
+            <FormField
+              key={fieldName}
+              control={form.control}
+              name={fieldName as keyof z.infer<typeof formSchema>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type={fieldName === "password" ? "password" : "text"}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )
+        )}
 
-        <Button type="submit" className="w-full">Sign Up</Button>
+        <Button type="submit" className="w-full">
+          Sign Up
+        </Button>
       </form>
     </Form>
   );
