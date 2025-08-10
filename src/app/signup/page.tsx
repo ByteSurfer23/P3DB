@@ -1,74 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import { auth, db } from "@/lib/firebase"; // your firebase config file
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export default function SignUpPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
+const formSchema = z.object({
+  salutation: z.string().min(1, "Select a salutation"),
+  name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(6),
+  location: z.string().min(2),
+  organization: z.string().min(2),
+  role: z.string().min(2),
+});
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+export default function SignUpForm() {
+  const router = useRouter();
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      salutation: "",
+      name: "",
+      email: "",
+      password: "",
+      location: "",
+      organization: "",
+      role: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // 1. Create user in Firebase Auth
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+      const user = userCredential.user;
 
-      // 2. Add profile data in Firestore
-      await setDoc(doc(db, "users", userCred.user.uid), {
-        name,
-        email,
+      await setDoc(doc(db, "users", user.uid), {
+        ...values,
         createdAt: serverTimestamp(),
       });
 
-      console.log("User signed up & saved to Firestore:", userCred.user.uid);
-
-      // 3. Redirect to search page
-      window.location.href = "/search";
-
-    } catch (err: any) {
-      setError(err.message);
+      router.push("/search");
+    } catch (error: any) {
+      console.error("Error signing up:", error.message);
     }
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <form onSubmit={handleSignUp} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border p-2 w-full"
-          required
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-md mx-auto">
+        <FormField
+          control={form.control}
+          name="salutation"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Salutation</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Salutation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mr.">Mr.</SelectItem>
+                  <SelectItem value="Mrs.">Mrs.</SelectItem>
+                  <SelectItem value="Ms.">Ms.</SelectItem>
+                  <SelectItem value="Master">Master</SelectItem>
+                  <SelectItem value="Dr.">Dr.</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 w-full"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full"
-          required
-        />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2">
-          Sign Up
-        </button>
+
+        {["name", "email", "password", "location", "organization", "role"].map((fieldName) => (
+          <FormField
+            key={fieldName}
+            control={form.control}
+            name={fieldName as keyof z.infer<typeof formSchema>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type={fieldName === "password" ? "password" : "text"}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+
+        <Button type="submit" className="w-full">Sign Up</Button>
       </form>
-    </div>
+    </Form>
   );
 }
