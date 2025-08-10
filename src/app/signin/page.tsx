@@ -1,18 +1,31 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/search");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-4">
-      <h1 className="text-2xl font-bold">Sign In</h1>
-      {/* Placeholder content for now */}
-      <Button>Sign In</Button>
-      <p className="text-sm text-muted-foreground">
-        Don't have an account?{" "}
-        <Link href="/signup" className="text-blue-500 hover:underline">
-          Sign Up
-        </Link>
-      </p>
-    </div>
+    <form onSubmit={handleSignIn} className="flex flex-col items-center space-y-4 min-h-[80vh] justify-center">
+      <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} className="border p-2" />
+      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} className="border p-2" />
+      <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">Sign In</button>
+      <p onClick={() => router.push("/signup")} className="text-sm text-blue-500 cursor-pointer">Don't have an account? Sign Up</p>
+    </form>
   );
 }
