@@ -4,12 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "@/lib/firebase"; // make sure you export `db` (Firestore) too
-import {
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 import {
   Form,
@@ -21,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 // Validation schema
 const formSchema = z.object({
@@ -29,6 +27,9 @@ const formSchema = z.object({
 });
 
 export default function SignInPage() {
+  useEffect(() => {
+    signOut(auth).catch(() => {});
+  }, []);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -39,7 +40,11 @@ export default function SignInPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       // 1. Sign in with Firebase Auth
-      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
       const user = userCredential.user;
 
       // 2. Get user document from Firestore

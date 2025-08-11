@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import ProtectedRoute from "../ProtectedRoute";
 
 type Phytocompound = {
   name: string;
@@ -148,6 +149,7 @@ export default function PhytocompoundsPage() {
   );
 
   return (
+    <ProtectedRoute>
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Phytocompounds Manager</h1>
 
@@ -312,5 +314,6 @@ export default function PhytocompoundsPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

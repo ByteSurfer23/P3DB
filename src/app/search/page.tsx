@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
+import ProtectedRoute from "../ProtectedRoute";
 type Phytocompound = {
   name: string;
   molecularFormula?: string | null;
@@ -63,6 +64,7 @@ export default function SearchPage() {
   );
 
   return (
+    <ProtectedRoute>
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Search Phytocompounds</h1>
 
@@ -149,5 +151,6 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
