@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -70,6 +69,7 @@ export default function SignUpForm() {
         userId: user.uid,
         action: "sign_up",
       });
+
       router.push("/search");
     } catch (error: any) {
       console.error("Error signing up:", error.message);
