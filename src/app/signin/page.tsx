@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "@/lib/firebase"; // make sure you export `db` (Firestore) too
 import { doc, getDoc } from "firebase/firestore";
+import { logUserAction } from "../Logging";
 
 import {
   Form,
@@ -59,6 +60,10 @@ export default function SignInPage() {
 
       // 3. Check `admin` flag in user doc
       const userData = userDocSnap.data();
+      await logUserAction({
+        userId: user.uid,
+        action: "sign_in",
+      });
       const isAdmin = userData.admin === true;
 
       // 4. Redirect based on admin flag

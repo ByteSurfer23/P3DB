@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { logUserAction } from "../Logging";
 
 const formSchema = z.object({
   salutation: z.string().min(1, "Select a salutation"),
@@ -62,10 +63,13 @@ export default function SignUpForm() {
 
       await setDoc(doc(db, "users", user.uid), {
         ...values,
-        admin: false,        // <-- Always set admin to false here
+        admin: false, // <-- Always set admin to false here
         createdAt: serverTimestamp(),
       });
-
+      await logUserAction({
+        userId: user.uid,
+        action: "sign_up",
+      });
       router.push("/search");
     } catch (error: any) {
       console.error("Error signing up:", error.message);
@@ -74,7 +78,10 @@ export default function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-md mx-auto">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 max-w-md mx-auto"
+      >
         <FormField
           control={form.control}
           name="salutation"

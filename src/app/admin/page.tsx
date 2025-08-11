@@ -11,7 +11,9 @@ import {
   addDoc,
   setDoc,
 } from "firebase/firestore";
+import { ref, get, set, push, remove, onValue } from "firebase/database";
 import { db } from "@/lib/firebase";
+import { rtdb } from "@/lib/firebase";
 import { useForm } from "react-hook-form";
 
 import {
@@ -68,10 +70,15 @@ type User = {
   password?: string;
 };
 
+type RTDBData = {
+  id: string;
+  [key: string]: any;
+};
+
 export default function AdminPage() {
   const { user, loading } = useAuth();
 
-  const [view, setView] = useState<"phytocompounds" | "requests" | "users">(
+  const [view, setView] = useState<"phytocompounds" | "requests" | "users" | "rtdb">(
     "phytocompounds"
   );
 
@@ -84,6 +91,13 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editMode, setEditMode] = useState(false);
 
+  // RTDB state
+  const [rtdbData, setRtdbData] = useState<RTDBData[]>([]);
+  const [rtdbPath, setRtdbPath] = useState("userLogs"); // Default to userLogs path
+  const [rtdbLoading, setRtdbLoading] = useState(false);
+  const [rtdbError, setRtdbError] = useState<string | null>(null);
+  const [rtdbSearchTerm, setRtdbSearchTerm] = useState("");
+
   const form = useForm<Phytocompound>({
     defaultValues: {
       name: "",
@@ -95,6 +109,114 @@ export default function AdminPage() {
       link2: "",
     },
   });
+
+  // RTDB Functions
+  async function fetchRTDBData() {
+    if (!rtdbPath.trim()) {
+      setRtdbError("Please enter a valid path");
+      return;
+    }
+
+    setRtdbLoading(true);
+    setRtdbError(null);
+
+    try {
+      const dbRef = ref(rtdb, rtdbPath);
+      const snapshot = await get(dbRef);
+      
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        
+        // Convert object to array format for table display
+        let dataArray: RTDBData[] = [];
+        
+        if (Array.isArray(data)) {
+          dataArray = data.map((item, index) => ({
+            id: index.toString(),
+            ...item
+          }));
+        } else if (typeof data === 'object' && data !== null) {
+          dataArray = Object.keys(data).map(key => ({
+            id: key,
+            ...data[key]
+          }));
+        } else {
+          // Handle primitive values
+          dataArray = [{ id: "value", data: data }];
+        }
+        
+        setRtdbData(dataArray);
+      } else {
+        setRtdbData([]);
+        setRtdbError("No data found at this path");
+      }
+    } catch (error) {
+      console.error("Error fetching RTDB data:", error);
+      setRtdbError("Failed to fetch data. Check the path and try again.");
+      setRtdbData([]);
+    } finally {
+      setRtdbLoading(false);
+    }
+  }
+
+  // Real-time listener for RTDB
+  useEffect(() => {
+    if (view === "rtdb" && rtdbPath.trim()) {
+      const dbRef = ref(rtdb, rtdbPath);
+      const unsubscribe = onValue(dbRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          let dataArray: RTDBData[] = [];
+          
+          if (Array.isArray(data)) {
+            dataArray = data.map((item, index) => ({
+              id: index.toString(),
+              ...item
+            }));
+          } else if (typeof data === 'object' && data !== null) {
+            dataArray = Object.keys(data).map(key => ({
+              id: key,
+              ...data[key]
+            }));
+          } else {
+            dataArray = [{ id: "value", data: data }];
+          }
+          
+          setRtdbData(dataArray);
+          setRtdbError(null);
+        } else {
+          setRtdbData([]);
+        }
+      }, (error) => {
+        console.error("RTDB listener error:", error);
+        setRtdbError("Real-time connection failed");
+      });
+
+      return () => unsubscribe();
+    }
+  }, [view, rtdbPath]);
+
+  // Filter RTDB data based on search
+  const filteredRtdbData = rtdbData.filter((item) => {
+    if (!rtdbSearchTerm) return true;
+    
+    const searchLower = rtdbSearchTerm.toLowerCase();
+    return Object.values(item).some(value => 
+      String(value).toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Get all unique column names from RTDB data
+  const rtdbColumns = React.useMemo(() => {
+    if (rtdbData.length === 0) return [];
+    
+    const allKeys = new Set<string>();
+    rtdbData.forEach(item => {
+      Object.keys(item).forEach(key => allKeys.add(key));
+    });
+    
+    return Array.from(allKeys).sort();
+  }, [rtdbData]);
 
   async function fetchJsonList() {
     try {
@@ -136,7 +258,6 @@ export default function AdminPage() {
   async function handleDelete(id: string) {
     try {
       await deleteDoc(doc(db, "jsonCollection", id));
-      // Optionally: await deleteDoc(doc(db, "phytocompounds", id));
       if (selectedId === id) clearSelection();
       fetchJsonList();
     } catch (error) {
@@ -251,8 +372,135 @@ export default function AdminPage() {
     return ts.toDate().toLocaleString();
   }
 
-  // Render JSX for each view
+  // Format any value for display
+  function formatValue(value: any): string {
+    if (value === null || value === undefined) return "-";
+    if (typeof value === 'object') return JSON.stringify(value);
+    if (typeof value === 'number' && value.toString().length === 13) {
+      // Convert timestamp to readable date
+      try {
+        return new Date(value).toLocaleString();
+      } catch {
+        return String(value);
+      }
+    }
+    return String(value);
+  }
 
+  // RTDB View
+  const rtdbView = (
+    <>
+      <h1 className="text-2xl font-bold mb-4">Realtime Database Viewer</h1>
+      
+      <div className="mb-4 space-y-4">
+        <div className="flex gap-4 items-end">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1">Database Path</label>
+            <Input
+              type="text"
+              placeholder="Enter path (e.g., userLogs, users, data/items)"
+              value={rtdbPath}
+              onChange={(e) => setRtdbPath(e.target.value)}
+            />
+          </div>
+          <Button onClick={fetchRTDBData} disabled={rtdbLoading}>
+            {rtdbLoading ? "Loading..." : "Fetch Data"}
+          </Button>
+        </div>
+        
+        {rtdbData.length > 0 && (
+          <div>
+            <Input
+              type="text"
+              placeholder="Search in data..."
+              value={rtdbSearchTerm}
+              onChange={(e) => setRtdbSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
+          </div>
+        )}
+      </div>
+
+      {rtdbError && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+          <p className="text-red-800">{rtdbError}</p>
+        </div>
+      )}
+
+      {rtdbLoading ? (
+        <div className="text-center py-8">
+          <p>Loading data from Realtime Database...</p>
+        </div>
+      ) : filteredRtdbData.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">
+            {rtdbData.length === 0 
+              ? "No data found. Try a different path or check your database." 
+              : "No data matches your search criteria."}
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-auto max-h-[600px] border rounded-lg">
+          <table className="min-w-full table-auto border-collapse">
+            <thead className="bg-gray-50 sticky top-0">
+              <tr>
+                {rtdbColumns.map((column) => (
+                  <th
+                    key={column}
+                    className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700"
+                  >
+                    {column === 'id' ? 'Log ID' : 
+                     column === 'userId' ? 'User ID' : 
+                     column === 'datetime' ? 'Date & Time' :
+                     column === 'timestamp' ? 'Timestamp' :
+                     column === 'action' ? 'Action' :
+                     column.charAt(0).toUpperCase() + column.slice(1)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRtdbData.map((row, index) => (
+                <tr key={row.id || index} className="hover:bg-gray-50">
+                  {rtdbColumns.map((column) => (
+                    <td
+                      key={column}
+                      className="border border-gray-300 px-4 py-2 text-sm"
+                      title={formatValue(row[column])}
+                    >
+                      <div className={`${column === 'userId' || column === 'id' ? 'max-w-xs' : 'max-w-sm'} truncate`}>
+                        {column === 'action' ? (
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            row[column] === 'sign_in' ? 'bg-green-100 text-green-800' :
+                            row[column] === 'sign_out' ? 'bg-red-100 text-red-800' :
+                            row[column] === 'sign_up' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {formatValue(row[column])}
+                          </span>
+                        ) : (
+                          formatValue(row[column])
+                        )}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {rtdbData.length > 0 && (
+        <div className="mt-4 text-sm text-gray-600">
+          Showing {filteredRtdbData.length} of {rtdbData.length} records
+          {rtdbSearchTerm && ` (filtered by "${rtdbSearchTerm}")`}
+        </div>
+      )}
+    </>
+  );
+
+  // Existing views remain the same...
   const phytocompoundsView = (
     <>
       <h1 className="text-2xl font-bold mb-4">Phytocompounds Manager</h1>
@@ -487,6 +735,7 @@ export default function AdminPage() {
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2 text-left">ID</th>
                 <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
                 <th className="border border-gray-300 px-4 py-2 text-left">Email</th>
                 <th className="border border-gray-300 px-4 py-2 text-left">Admin</th>
@@ -500,6 +749,7 @@ export default function AdminPage() {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-4 py-2">{user.id || "-"}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.name || "-"}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.email || "-"}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.admin ? "Yes" : "No"}</td>
@@ -519,7 +769,7 @@ export default function AdminPage() {
 
   return (
     <ProtectedRoute>
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-6 max-w-7xl mx-auto">
         <nav className="mb-6 flex gap-4">
           <Button
             variant={view === "phytocompounds" ? "default" : "outline"}
@@ -539,11 +789,18 @@ export default function AdminPage() {
           >
             Users
           </Button>
+          <Button
+            variant={view === "rtdb" ? "default" : "outline"}
+            onClick={() => setView("rtdb")}
+          >
+            Realtime DB
+          </Button>
         </nav>
 
         {view === "phytocompounds" && phytocompoundsView}
         {view === "requests" && requestsView}
         {view === "users" && usersView}
+        {view === "rtdb" && rtdbView}
       </div>
     </ProtectedRoute>
   );
