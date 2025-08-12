@@ -5,6 +5,14 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import ProtectedRoute from "../ProtectedRoute";
+
+// Shadcn components
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+
 type Phytocompound = {
   name: string;
   molecularFormula?: string | null;
@@ -26,7 +34,6 @@ export default function SearchPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch JSON entries on mount
   async function fetchJsonList() {
     const colRef = collection(db, "jsonCollection");
     const snapshot = await getDocs(colRef);
@@ -41,7 +48,6 @@ export default function SearchPage() {
     fetchJsonList();
   }, []);
 
-  // Fetch full compound details on select
   async function handleSelect(id: string) {
     setSelectedId(id);
     const compoundDoc = await getDoc(doc(db, "phytocompounds", id));
@@ -52,105 +58,118 @@ export default function SearchPage() {
     }
   }
 
-  // Cancel current selection
   function handleCancel() {
     setSelectedCompound(null);
     setSelectedId(null);
   }
 
-  // Filter JSON list by search term
   const filteredJsonList = jsonList.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <ProtectedRoute>
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Search Phytocompounds</h1>
+      <div className="p-6 max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Search Phytocompounds</h1>
 
-          <div className="mb-4">
-      <Link
-        href="/request"
-        className="text-blue-600 underline hover:text-blue-800"
-      >
-        Go to Request Page
-      </Link>
-    </div>
-
-      {/* Search Input */}
-      <input
-        type="text"
-        placeholder="Search compounds..."
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        className="border p-2 rounded mb-4 w-full max-w-sm"
-      />
-
-      <div className="flex gap-6">
-        {/* JSON List */}
-        <div className="w-1/3 border p-4 rounded max-h-[400px] overflow-auto">
-          <h2 className="font-semibold mb-2">Compound List</h2>
-          {filteredJsonList.length === 0 && <p>No entries found.</p>}
-          <ul>
-            {filteredJsonList.map(({ id, name }) => (
-              <li key={id} className="py-1 cursor-pointer hover:bg-gray-100 rounded">
-                <button
-                  onClick={() => handleSelect(id)}
-                  className={`text-left w-full ${
-                    id === selectedId ? "font-bold text-blue-600" : "text-gray-700"
-                  }`}
-                >
-                  {name}
-                </button>
-              </li>
-            ))}
-          </ul>
+        <div className="mb-6 flex justify-between items-center">
+          <Input
+            type="text"
+            placeholder="Search compounds..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full max-w-sm"
+          />
+          <Link href="/request">
+            <Button variant="link">Make a docking request</Button>
+          </Link>
         </div>
 
-        {/* Selected Compound Details */}
-        <div className="w-2/3 border p-4 rounded min-h-[400px]">
-          {selectedCompound ? (
-            <>
-              <h2 className="font-semibold mb-4">Compound Details</h2>
-              <p><strong>Name:</strong> {selectedCompound.name}</p>
-              <p><strong>Molecular Formula:</strong> {selectedCompound.molecularFormula || "-"}</p>
-              <p><strong>Molecular Weight:</strong> {selectedCompound.molecularWeight || "-"}</p>
-              <p><strong>IUPAC Name:</strong> {selectedCompound.iupacName || "-"}</p>
-              <p><strong>SMILES:</strong> {selectedCompound.smiles || "-"}</p>
-              <p>
-                <strong>Link 1:</strong>{" "}
-                {selectedCompound.link1 ? (
-                  <a href={selectedCompound.link1} target="_blank" rel="noreferrer" className="text-blue-600 underline">
-                    {selectedCompound.link1}
-                  </a>
-                ) : (
-                  "-"
-                )}
-              </p>
-              <p>
-                <strong>Link 2:</strong>{" "}
-                {selectedCompound.link2 ? (
-                  <a href={selectedCompound.link2} target="_blank" rel="noreferrer" className="text-blue-600 underline">
-                    {selectedCompound.link2}
-                  </a>
-                ) : (
-                  "-"
-                )}
-              </p>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Compound List */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Compound List</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[400px]">
+                <ul className="space-y-1">
+                  {filteredJsonList.length === 0 && <p className="text-sm text-muted-foreground p-2">No entries found.</p>}
+                  {filteredJsonList.map(({ id, name }) => (
+                    <li key={id}>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSelect(id)}
+                        className={`w-full justify-start text-left ${id === selectedId ? "bg-accent" : ""}`}
+                      >
+                        {name}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </ScrollArea>
+            </CardContent>
+          </Card>
 
-              <button
-                onClick={handleCancel}
-                className="mt-6 bg-red-600 text-white px-4 py-2 rounded"
-              >
-                Cancel Selection
-              </button>
-            </>
-          ) : (
-            <p className="text-gray-500">Select a compound from the list to see details here.</p>
-          )}
+          {/* Selected Compound Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Compound Details</CardTitle>
+            </CardHeader>
+            <CardContent className="min-h-[400px]">
+              {selectedCompound ? (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold">{selectedCompound.name}</h3>
+                    <Separator className="my-2" />
+                    <p className="text-sm text-muted-foreground mt-4">
+                      <strong className="text-foreground">Molecular Formula:</strong> {selectedCompound.molecularFormula || "-"}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      <strong className="text-foreground">Molecular Weight:</strong> {selectedCompound.molecularWeight || "-"}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      <strong className="text-foreground">IUPAC Name:</strong> {selectedCompound.iupacName || "-"}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      <strong className="text-foreground">SMILES:</strong> {selectedCompound.smiles || "-"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 mt-4">
+                    <p className="text-sm text-muted-foreground">
+                      <strong className="text-foreground">Link 1:</strong>{" "}
+                      {selectedCompound.link1 ? (
+                        <a href={selectedCompound.link1} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                          {selectedCompound.link1}
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      <strong className="text-foreground">Link 2:</strong>{" "}
+                      {selectedCompound.link2 ? (
+                        <a href={selectedCompound.link2} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                          {selectedCompound.link2}
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </p>
+                  </div>
+
+                  <Button onClick={handleCancel} variant="destructive" className="mt-4">
+                    Cancel Selection
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Select a compound from the list to see details here.</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
     </ProtectedRoute>
   );
 }

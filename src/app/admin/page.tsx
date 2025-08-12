@@ -97,6 +97,9 @@ export default function AdminPage() {
   const [rtdbLoading, setRtdbLoading] = useState(false);
   const [rtdbError, setRtdbError] = useState<string | null>(null);
   const [rtdbSearchTerm, setRtdbSearchTerm] = useState("");
+  
+  // User search state
+  const [userSearchTerm, setUserSearchTerm] = useState("");
 
   const form = useForm<Phytocompound>({
     defaultValues: {
@@ -387,6 +390,16 @@ export default function AdminPage() {
     return String(value);
   }
 
+  // Filter users based on search
+  const filteredUsers = users.filter(user => {
+    if (!userSearchTerm) return true;
+    const searchTermLower = userSearchTerm.toLowerCase();
+    return (
+      user.name?.toLowerCase().includes(searchTermLower) ||
+      user.id?.toLowerCase().includes(searchTermLower)
+    );
+  });
+  
   // RTDB View
   const rtdbView = (
     <>
@@ -450,11 +463,11 @@ export default function AdminPage() {
                     className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700"
                   >
                     {column === 'id' ? 'Log ID' : 
-                     column === 'userId' ? 'User ID' : 
-                     column === 'datetime' ? 'Date & Time' :
-                     column === 'timestamp' ? 'Timestamp' :
-                     column === 'action' ? 'Action' :
-                     column.charAt(0).toUpperCase() + column.slice(1)}
+                      column === 'userId' ? 'User ID' : 
+                      column === 'datetime' ? 'Date & Time' :
+                      column === 'timestamp' ? 'Timestamp' :
+                      column === 'action' ? 'Action' :
+                      column.charAt(0).toUpperCase() + column.slice(1)}
                   </th>
                 ))}
               </tr>
@@ -682,14 +695,14 @@ export default function AdminPage() {
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-left">User Email</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">User ID</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Protein Target</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Ligand Target</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Active Site Docking</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Blind Docking</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Created At</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">User Email</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">User ID</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Protein Target</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Ligand Target</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Active Site Docking</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Blind Docking</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Created At</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -728,26 +741,36 @@ export default function AdminPage() {
     <>
       <h1 className="text-2xl font-bold mb-4">Users</h1>
 
-      {users.length === 0 ? (
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search by name or ID..."
+          value={userSearchTerm}
+          onChange={(e) => setUserSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+
+      {filteredUsers.length === 0 ? (
         <p>No users found.</p>
       ) : (
         <div className="overflow-auto max-h-[500px] border rounded p-4">
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-left">ID</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Email</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Admin</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Created At</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Location</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Organization</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Role</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Salutation</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">ID</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Name</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Email</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Admin</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Created At</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Location</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Organization</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Role</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">Salutation</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-4 py-2">{user.id || "-"}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.name || "-"}</td>
