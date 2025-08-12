@@ -68,8 +68,27 @@ export default function QuerySection() {
         createdAt: serverTimestamp(),
       });
 
+      const createdAtString = new Date().toLocaleString("en-IN", {
+        dateStyle: "full",
+        timeStyle: "short",
+      });
+
       setSuccessMsg("Request submitted successfully!");
       form.reset();
+
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          activeSiteDocking: data.activeSiteDocking,
+          blindDocking: data.blindDocking,
+          createdAt: createdAtString,
+          ligandTarget: data.ligandTarget,
+          proteinTarget: data.proteinTarget,
+          userEmail: user.email,
+          userId: user.uid,
+        }),
+      });
     } catch (err) {
       console.error(err);
       setError("Failed to submit request. Try again.");
