@@ -516,171 +516,171 @@ export default function AdminPage() {
   // Existing views remain the same...
   const phytocompoundsView = (
     <>
-      <h1 className="text-2xl font-bold mb-4">Phytocompounds Manager</h1>
+  <h1 className="text-2xl font-bold mb-4">Phytocompounds Manager</h1>
 
-      <input
-        type="text"
-        placeholder="Search compounds..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="border p-2 rounded mb-4 w-full max-w-sm"
-      />
+  <input
+    type="text"
+    placeholder="Search compounds..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="border p-2 rounded mb-4 w-full max-w-sm"
+  />
 
-      <div className="flex gap-6">
-        {/* JSON list */}
-        <div className="w-1/3 border p-4 rounded max-h-[400px] overflow-auto">
-          <h2 className="font-semibold mb-2">JSON Entries</h2>
-          {filteredJsonList.length === 0 && <p>No entries found.</p>}
-          <ul>
-            {filteredJsonList.map(({ id, name }) => (
-              <li key={id} className="flex justify-between items-center py-1">
-                <button
-                  onClick={() => handleSelect(id)}
-                  className={`text-left flex-grow ${
-                    id === selectedId ? "font-bold text-blue-600" : "text-gray-700"
-                  }`}
-                >
-                  {name}
-                </button>
-                <button
-                  onClick={() => handleDelete(id)}
-                  className="text-red-600 ml-2 hover:underline"
-                  title="Delete entry"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button
-            onClick={clearSelection}
-            className="mt-4 w-full bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
-          >
-            Clear Selection
-          </button>
-        </div>
+  <div className="flex flex-col md:flex-row gap-6">
+    {/* JSON list */}
+    <div className="md:w-1/3 w-full border p-4 rounded max-h-[400px] overflow-auto">
+      <h2 className="font-semibold mb-2">JSON Entries</h2>
+      {filteredJsonList.length === 0 && <p>No entries found.</p>}
+      <ul>
+        {filteredJsonList.map(({ id, name }) => (
+          <li key={id} className="flex justify-between items-center py-1">
+            <button
+              onClick={() => handleSelect(id)}
+              className={`text-left flex-grow ${
+                id === selectedId ? "font-bold text-blue-600" : "text-gray-700"
+              }`}
+            >
+              {name}
+            </button>
+            <button
+              onClick={() => handleDelete(id)}
+              className="text-red-600 ml-2 hover:underline"
+              title="Delete entry"
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={clearSelection}
+        className="mt-4 w-full bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
+      >
+        Clear Selection
+      </button>
+    </div>
 
-        {/* Compound details + form */}
-        <div className="w-2/3 border p-4 rounded">
-          <h2 className="font-semibold mb-4">
-            {editMode ? "Edit Compound" : "Add New Compound"}
-          </h2>
+    {/* Compound details + form */}
+    <div className="md:w-2/3 w-full border p-4 rounded">
+      <h2 className="font-semibold mb-4">
+        {editMode ? "Edit Compound" : "Add New Compound"}
+      </h2>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name *</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} required />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name *</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} required />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="molecularFormula"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Molecular Formula</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="molecularFormula"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Molecular Formula</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="molecularWeight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Molecular Weight</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="molecularWeight"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Molecular Weight</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="iupacName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>IUPAC Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="iupacName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>IUPAC Name</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="smiles"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>SMILES</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="smiles"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>SMILES</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="link1"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Link 1</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="link1"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Link 1</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="link2"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Link 2</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="link2"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Link 2</FormLabel>
+                <FormControl>
+                  <Input {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <div className="flex items-center gap-4">
-                <Button type="submit">
-                  {editMode ? "Save Changes" : "Add Compound"}
-                </Button>
-                {editMode && (
-                  <Button type="button" variant="outline" onClick={clearSelection}>
-                    Cancel Edit
-                  </Button>
-                )}
-              </div>
-            </form>
-          </Form>
-        </div>
-      </div>
-    </>
+          <div className="flex items-center gap-4">
+            <Button type="submit">
+              {editMode ? "Save Changes" : "Add Compound"}
+            </Button>
+            {editMode && (
+              <Button type="button" variant="outline" onClick={clearSelection}>
+                Cancel Edit
+              </Button>
+            )}
+          </div>
+        </form>
+      </Form>
+    </div>
+  </div>
+</>
   );
 
   // Requests View
@@ -792,39 +792,44 @@ export default function AdminPage() {
 
   return (
     <ProtectedRoute>
-      <div className="p-6 max-w-7xl mx-auto">
-        <nav className="mb-6 flex gap-4">
-          <Button
-            variant={view === "phytocompounds" ? "default" : "outline"}
-            onClick={() => setView("phytocompounds")}
-          >
-            Phytocompounds
-          </Button>
-          <Button
-            variant={view === "requests" ? "default" : "outline"}
-            onClick={() => setView("requests")}
-          >
-            Requests
-          </Button>
-          <Button
-            variant={view === "users" ? "default" : "outline"}
-            onClick={() => setView("users")}
-          >
-            Users
-          </Button>
-          <Button
-            variant={view === "rtdb" ? "default" : "outline"}
-            onClick={() => setView("rtdb")}
-          >
-            Realtime DB
-          </Button>
-        </nav>
+  <div className="p-6 max-w-7xl mx-auto">
+    <nav className="mb-6 flex flex-wrap gap-2 sm:gap-4 sm:flex-row flex-col">
+      <Button
+        variant={view === "phytocompounds" ? "default" : "outline"}
+        className="w-full sm:w-auto"
+        onClick={() => setView("phytocompounds")}
+      >
+        Phytocompounds
+      </Button>
+      <Button
+        variant={view === "requests" ? "default" : "outline"}
+        className="w-full sm:w-auto"
+        onClick={() => setView("requests")}
+      >
+        Requests
+      </Button>
+      <Button
+        variant={view === "users" ? "default" : "outline"}
+        className="w-full sm:w-auto"
+        onClick={() => setView("users")}
+      >
+        Users
+      </Button>
+      <Button
+        variant={view === "rtdb" ? "default" : "outline"}
+        className="w-full sm:w-auto"
+        onClick={() => setView("rtdb")}
+      >
+        Realtime DB
+      </Button>
+    </nav>
 
-        {view === "phytocompounds" && phytocompoundsView}
-        {view === "requests" && requestsView}
-        {view === "users" && usersView}
-        {view === "rtdb" && rtdbView}
-      </div>
-    </ProtectedRoute>
+    {view === "phytocompounds" && phytocompoundsView}
+    {view === "requests" && requestsView}
+    {view === "users" && usersView}
+    {view === "rtdb" && rtdbView}
+  </div>
+</ProtectedRoute>
+
   );
 }
