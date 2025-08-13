@@ -1,103 +1,192 @@
-import Image from "next/image";
-// just comments for a random commit , another new commit
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Lightbulb, TrendingUp, Handshake, LogIn, UserPlus } from "lucide-react";
+import { motion } from "framer-motion"; // Assuming framer-motion is available for advanced animations
+const features = [
+  {
+    icon: <Lightbulb className="h-8 w-8 text-white" />,
+    title: "Innovative Solutions",
+    description: "Our platform leverages cutting-edge technology to provide solutions that are both smart and efficient."
+  },
+  {
+    icon: <TrendingUp className="h-8 w-8 text-white" />,
+    title: "Performance Driven",
+    description: "Focus on results with a system designed for high performance and reliability, no matter the scale."
+  },
+  {
+    icon: <Handshake className="h-8 w-8 text-white" />,
+    title: "Collaborative Community",
+    description: "Join a community of like-minded individuals to share ideas and grow together."
+  },
+];
+
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground overflow-x-hidden">
+      
+      {/* Hero Section */}
+      <section className="container flex-1 flex flex-col items-center justify-center text-center py-20 px-4 animate-fade-in">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex flex-col items-center max-w-4xl"
+        >
+          {/* <div className="mb-8">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="https://placehold.co/150x150/2563EB/ffffff?text=College+Logo"
+              alt="College Logo Placeholder"
+              width={150}
+              height={150}
+              className="rounded-full shadow-lg"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div> */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 text-primary">
+            Welcome to MyApp
+          </h1>
+          <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground max-w-2xl mb-8">
+            A powerful platform for your college's needs. Built for a seamless and integrated experience.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/signin">
+              {/* Updated Sign In button with LogIn icon */}
+              <Button size="lg" className="h-12 text-lg px-8 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <LogIn className="mr-2 h-5 w-5" />
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/signup">
+              {/* Updated Sign Up button with UserPlus icon */}
+              <Button size="lg" variant="outline" className="h-12 text-lg px-8 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <UserPlus className="mr-2 h-5 w-5" />
+                Sign Up
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Features Section with Rombo Effect */}
+      <section className="relative w-full py-20 bg-muted">
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          {/* Rombo effect with a slanted background */}
+          <div className="absolute inset-0 bg-primary/10 transform -skew-y-3"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
+        <div className="container relative z-10 flex flex-col items-center text-center px-4 mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl md:text-5xl font-extrabold mb-4"
+          >
+            Features at a Glance
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-12 mx-auto"
+          >
+            We've built a platform with the tools you need to succeed. From research to collaboration, everything is at your fingertips.
+          </motion.p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                className="bg-card p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center border border-border"
+              >
+                <div className="bg-primary p-4 rounded-full mb-4">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Another Section with a call to action */}
+      <section className="w-full py-20 bg-background">
+        <div className="container flex flex-col items-center text-center px-4 mx-auto">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl md:text-5xl font-extrabold mb-4"
+          >
+            Ready to Get Started?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-8 mx-auto"
+          >
+            Sign up today to explore all the powerful features and connect with your community.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Link href="/signup">
+              <Button size="lg" className="h-14 text-xl px-12 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer Section */}
+      <footer className="w-full text-center py-8 px-4 border-t border-border/40 text-muted-foreground">
+        <p className="text-sm">
+          &copy; {new Date().getFullYear()} MyApp. All rights reserved.
+        </p>
+        <div className="mt-2 flex justify-center gap-4 text-sm">
+          <Link href="/about" className="hover:underline hover:underline-offset-4">
+            About
+          </Link>
+          <Link href="/contact" className="hover:underline hover:underline-offset-4">
+            Contact
+          </Link>
+          <Link href="/privacy" className="hover:underline hover:underline-offset-4">
+            Privacy Policy
+          </Link>
+        </div>
       </footer>
     </div>
   );
 }
+
+// Add these keyframes to your global CSS file (e.g., globals.css)
+/*
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+*/
