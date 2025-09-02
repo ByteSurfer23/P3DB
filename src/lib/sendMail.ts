@@ -72,7 +72,7 @@ export default async function sendMail(body:any) {
     // Send email
     await transporter.sendMail({
       from: `"Docking Platform" <${process.env.NEXT_EMAIL}>`,
-      to: "sjabezsam@gmail.com",
+      to: "pthreedatabase@gmail.com",
       subject: "Docking Request Submitted",
       html: htmlContent,
     });

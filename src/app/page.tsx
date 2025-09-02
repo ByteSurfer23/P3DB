@@ -70,8 +70,17 @@ export default function Home() {
       </section>
 
       {/* Features Section with Rombo Effect */}
+
+
+
+
+      {/* start of component */}
+
+
+
       <section className="relative w-full py-20 bg-muted">
         <div className="absolute inset-0 z-0 overflow-hidden">
+          
           {/* Rombo effect with a slanted background */}
           <div className="absolute inset-0 bg-primary/10 transform -skew-y-3"></div>
         </div>
@@ -80,7 +89,7 @@ export default function Home() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
+            viewport={{ once: true, amount: 0.5 }} 
             transition={{ duration: 0.6 }}
             className="text-4xl md:text-5xl font-extrabold mb-4"
           >
@@ -116,6 +125,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+{/*end of component*/}
+
+
 
       {/* Another Section with a call to action */}
       <section className="w-full py-20 bg-background">
