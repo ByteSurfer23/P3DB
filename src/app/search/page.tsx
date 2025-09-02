@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Search, Handshake } from "lucide-react";
+import { Search, Handshake } from "lucide-react";
 
 type Phytocompound = {
   name: string;
@@ -29,13 +29,13 @@ type JsonEntry = {
   name: string;
 };
 
-// Note: This component assumes ProtectedRoute is correctly configured and wraps the content.
-// The code has been updated to use the same stylistic approach from previous pages.
 export default function SearchPage() {
   const [jsonList, setJsonList] = useState<JsonEntry[]>([]);
   const [selectedCompound, setSelectedCompound] = useState<Phytocompound | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function fetchJsonList() {
     const colRef = collection(db, "jsonCollection");
@@ -52,18 +52,60 @@ export default function SearchPage() {
   }, []);
 
   async function handleSelect(id: string) {
+    setIsLoading(true);
+    setError(null);
     setSelectedId(id);
-    const compoundDoc = await getDoc(doc(db, "phytocompounds", id));
-    if (compoundDoc.exists()) {
-      setSelectedCompound(compoundDoc.data() as Phytocompound);
-    } else {
+    setSelectedCompound(null); // Clear previous selection
+
+    const compoundEntry = jsonList.find(item => item.id === id);
+    if (!compoundEntry) {
+      setError("Compound not found in the list.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Hardcoded list of compound IDs to be fetched from the caching server
+      const cachedCompoundIds = [""];
+
+      if (cachedCompoundIds.includes(id)) {
+        // If the compound is in the "caching list," fetch from the Redis server
+        console.log("Fetching from Redis caching server...");
+        const response = await fetch(`http://localhost:3001/compound/${compoundEntry.name}`);
+        
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.statusText}`);
+        }
+
+        const compoundDetails = await response.json();
+        setSelectedCompound(compoundDetails);
+      } else {
+        // Otherwise, fetch directly from the 'phytocompounds' collection in Firebase
+        console.log("Fetching from Firebase 'phytocompounds' collection...");
+        const docRef = doc(db, "phytocompounds", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const compoundDetails = docSnap.data() as Phytocompound;
+          setSelectedCompound(compoundDetails);
+        } else {
+          setError("Compound details not found in Firebase database.");
+        }
+      }
+
+    } catch (err: any) {
+      console.error("Failed to fetch compound details:", err);
+      setError("Failed to fetch compound details. Please try again.");
       setSelectedCompound(null);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   function handleCancel() {
     setSelectedCompound(null);
     setSelectedId(null);
+    setError(null);
   }
 
   const filteredJsonList = jsonList.filter(item =>
@@ -145,7 +187,27 @@ export default function SearchPage() {
               </CardHeader>
               <CardContent className="min-h-[400px]">
                 <AnimatePresence mode="wait">
-                  {selectedCompound ? (
+                  {isLoading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center justify-center h-full"
+                    >
+                      <p className="text-base text-muted-foreground text-center">Loading compound details...</p>
+                    </motion.div>
+                  ) : error ? (
+                    <motion.div
+                      key="error"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center justify-center h-full text-center text-red-500"
+                    >
+                      <p className="text-base">{error}</p>
+                    </motion.div>
+                  ) : selectedCompound ? (
                     <motion.div
                       key={selectedId}
                       initial={{ opacity: 0, y: 10 }}
@@ -211,6 +273,7 @@ export default function SearchPage() {
                     </motion.div>
                   ) : (
                     <motion.div
+                      key="placeholder"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
