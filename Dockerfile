@@ -10,6 +10,8 @@ COPY package.json package-lock.json ./
 # Install all dependencies (including dev deps)
 RUN npm install
 
+COPY .env.local .env.local
+
 # Copy the rest of the source code
 COPY . .
 
