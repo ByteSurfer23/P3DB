@@ -16,5 +16,5 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_REDIS_URL: process.env.NEXT_PUBLIC_REDIS_URL,
   },
 };
-
+// next config file updated
 export default nextConfig;
