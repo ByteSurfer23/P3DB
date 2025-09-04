@@ -15,7 +15,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
   databaseURL: process.env.NEXT_PUBLIC_RTDB!,
 };
-
+console.log(firebaseConfig)
 // Initialize Firebase only once
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
