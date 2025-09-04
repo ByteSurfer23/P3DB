@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Lightbulb, TrendingUp, Handshake, LogIn, UserPlus } from "lucide-react";
 import { motion } from "framer-motion"; // Assuming framer-motion is available for advanced animations
-console.log(process.env.NEXT_PUBLIC_FIREBASE_API_KEY)
 const features = [
   {
     icon: <Lightbulb className="h-8 w-8 text-white" />,
