@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
