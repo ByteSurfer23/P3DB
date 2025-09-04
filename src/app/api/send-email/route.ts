@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     console.log(body);
 
     // 1. Establish a connection to the Redis server
-    const connectionUrl = process.env.NEXT_REDIS_URL;
+    const connectionUrl = process.env.NEXT_PUBLIC_REDIS_URL;
     if (!connectionUrl) {
       throw new Error("NEXT_REDIS_URL environment variable is not set.");
     }
