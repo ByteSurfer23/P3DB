@@ -47,7 +47,7 @@ export default function Home() {
             Welcome to MyApp
           </h1>
           <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground max-w-2xl mb-8">
-            A powerful platform for your college's needs. Built for a seamless and integrated experience.
+            A powerful platform for your college needs. Built for a seamless and integrated experience.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -102,7 +102,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-12 mx-auto"
           >
-            We've built a platform with the tools you need to succeed. From research to collaboration, everything is at your fingertips.
+            We have built a platform with the tools you need to succeed. From research to collaboration, everything is at your fingertips.
           </motion.p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto">
