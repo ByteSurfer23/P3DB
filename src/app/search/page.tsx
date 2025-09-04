@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-no-store";
 
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, doc, getDoc, query, orderBy } from "firebase/firestore";
