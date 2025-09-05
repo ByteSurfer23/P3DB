@@ -74,8 +74,7 @@ export default function Home() {
             Welcome to PhytoDB
           </h1>
           <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground max-w-2xl mb-8">
-            A powerful platform for your college needs. Built for a seamless and
-            integrated experience.
+            A seamless way to explore phytocompounds and accelerate your research
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -118,7 +117,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-4xl md:text-5xl font-extrabold mb-4 text-white drop-shadow-lg"
           >
-            Features at a Glance
+           Your Research, Simplified
           </motion.h2>
 
           <motion.p
@@ -128,8 +127,8 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-white max-w-3xl mb-12 mx-auto drop-shadow"
           >
-            We have built a platform with the tools you need to succeed. From
-            research to collaboration, everything is at your fingertips.
+           Search phytocompounds, filter results, and run docking requests with just a few clicks
+
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto">
@@ -176,8 +175,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-8 mx-auto"
           >
-            Sign up today to explore all the powerful features and connect with
-            your community.
+            Sign up today to explore all the powerful features and gain more knowledge about Phytocompounds.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -190,7 +188,7 @@ export default function Home() {
                 size="lg"
                 className="h-14 text-xl px-12 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               >
-                Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
+                Explore the site <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </motion.div>
@@ -200,40 +198,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="w-full text-center py-8 px-4 border-t border-border/40 text-muted-foreground">
         <p className="text-sm">
-          &copy; {new Date().getFullYear()} MyApp. All rights reserved.
+          &copy; {new Date().getFullYear()} PhytoDB. All rights reserved.
         </p>
-        <div className="mt-2 flex justify-center gap-4 text-sm">
-          <Link
-            href="/about"
-            className="hover:underline hover:underline-offset-4"
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            className="hover:underline hover:underline-offset-4"
-          >
-            Contact
-          </Link>
-          <Link
-            href="/privacy"
-            className="hover:underline hover:underline-offset-4"
-          >
-            Privacy Policy
-          </Link>
-        </div>
       </footer>
     </div>
   );
 }
-
-// Add these keyframes to your global CSS (globals.css)
-/*
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
-}
-*/

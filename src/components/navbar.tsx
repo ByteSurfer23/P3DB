@@ -38,7 +38,7 @@ export function Navbar() {
         {/* Mobile Menu */}
         <div className="flex items-center gap-2 md:hidden">
           <ModeToggle />
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          {/* <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6 text-primary" />
@@ -46,9 +46,9 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="flex flex-col justify-between">
-              {/* The mobile sheet is now empty since there are no menu items */}
+              
             </SheetContent>
-          </Sheet>
+          </Sheet> */}
         </div>
       </div>
     </header>
