@@ -223,8 +223,8 @@ export default function SearchPage() {
               <SelectTrigger className="w-full"><SelectValue placeholder="Weight" /></SelectTrigger>
               <SelectContent className="z-50">
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem value="with">With Weight</SelectItem>
-                <SelectItem value="without">Without Weight</SelectItem>
+                <SelectItem value="with"><p>&gt; 500 g/mol</p></SelectItem>
+                <SelectItem value="without"><p>&lt; 500 g/mol</p></SelectItem>
               </SelectContent>
             </Select>
           </div>
