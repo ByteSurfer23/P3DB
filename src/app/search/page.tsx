@@ -229,7 +229,7 @@ export default function SearchPage() {
               </SelectContent>
             </Select>
           </div>
-
+{/*checking the greater than symbol */}
           <div>
             <Select value={selectedPlantCategory} onValueChange={(v) => setSelectedPlantCategory(v || "all")}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Plant category" /></SelectTrigger>
