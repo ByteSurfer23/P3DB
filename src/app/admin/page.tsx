@@ -47,6 +47,7 @@ type Phytocompound = {
   smiles?: string | null;
   link1?: string | null;
   link2?: string | null;
+  sourcestring?: string | null;
 
   // new fields
   categories?: string[];
@@ -252,8 +253,9 @@ function MultiSelectDropdown({
           )}
         </div>
         <svg
-          className={`ml-2 h-4 w-4 transform transition-transform ${open ? "rotate-180" : ""
-            }`}
+          className={`ml-2 h-4 w-4 transform transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -339,6 +341,7 @@ export default function AdminPage() {
       link1: "",
       link2: "",
       categories: [],
+      sourcestring: "",
       weight: false,
       plantSource: false, // checkbox
       plantName: "", // string input
@@ -567,6 +570,7 @@ export default function AdminPage() {
           weight: !!data.weight,
           plantSource: !!data.plantSource,
           plantName: data.plantName ?? "",
+          sourcestring: data.sourcestring ?? "",
           animalSource: !!data.animalSource,
           animalName: data.animalName ?? "",
         });
@@ -603,6 +607,7 @@ export default function AdminPage() {
       link1: "",
       link2: "",
       categories: [],
+      sourcestring: "",
       weight: false,
       plantSource: false,
       plantName: "",
@@ -635,10 +640,11 @@ export default function AdminPage() {
         link2: data.link2 || null,
         categories: data.categories || [],
         weight: !!data.weight,
-        plantSource: !!data.plantSource,
-        plantName: data.plantSource ? (data.plantName ?? "") : null,
-        animalSource: !!data.animalSource,
-        animalName: data.animalSource ? (data.animalName ?? "") : null,
+        sourcestring: data.sourcestring || null,
+        plantSource: true,
+        plantName: data.plantName || null,
+        animalSource: true,
+        animalName: data.animalName || null,
       };
 
       if (editMode && selectedId) {
@@ -650,7 +656,10 @@ export default function AdminPage() {
         return;
       }
 
-      const compoundRef = await addDoc(collection(db, "phytocompounds"), payload);
+      const compoundRef = await addDoc(
+        collection(db, "phytocompounds"),
+        payload
+      );
       await setDoc(doc(db, "jsonCollection", compoundRef.id), payload);
 
       alert("Added successfully");
@@ -744,7 +753,10 @@ export default function AdminPage() {
   const filteredUsers = users.filter((u) => {
     if (!userSearchTerm) return true;
     const s = userSearchTerm.toLowerCase();
-    return (u.name || "").toLowerCase().includes(s) || (u.id || "").toLowerCase().includes(s);
+    return (
+      (u.name || "").toLowerCase().includes(s) ||
+      (u.id || "").toLowerCase().includes(s)
+    );
   });
 
   // -------------------------
@@ -757,7 +769,9 @@ export default function AdminPage() {
       <div className="mb-4 space-y-4">
         <div className="flex gap-4 items-end">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">Database Path</label>
+            <label className="block text-sm font-medium mb-1">
+              Database Path
+            </label>
             <Input
               type="text"
               placeholder="Enter path (e.g., userLogs, users, data/items)"
@@ -837,7 +851,9 @@ export default function AdminPage() {
                     >
                       <div
                         className={`${
-                          column === "userId" || column === "id" ? "max-w-xs" : "max-w-sm"
+                          column === "userId" || column === "id"
+                            ? "max-w-xs"
+                            : "max-w-sm"
                         } truncate`}
                       >
                         {column === "action" ? (
@@ -901,29 +917,44 @@ export default function AdminPage() {
               <li key={id} className="flex justify-between items-center py-1">
                 <button
                   onClick={() => handleSelect(id)}
-                  className={`text-left flex-grow ${id === selectedId ? "font-bold text-blue-600" : "text-gray-700"}`}
+                  className={`text-left flex-grow ${
+                    id === selectedId
+                      ? "font-bold text-blue-600"
+                      : "text-gray-700"
+                  }`}
                 >
                   <div className="flex items-center gap-2">
                     <span>{name}</span>
                     {cats && cats.length > 0 && (
-                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded ml-2">{cats.join(", ")}</span>
+                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded ml-2">
+                        {cats.join(", ")}
+                      </span>
                     )}
                   </div>
                 </button>
-                <button onClick={() => handleDelete(id)} className="text-red-600 ml-2 hover:underline" title="Delete entry">
+                <button
+                  onClick={() => handleDelete(id)}
+                  className="text-red-600 ml-2 hover:underline"
+                  title="Delete entry"
+                >
                   Delete
                 </button>
               </li>
             ))}
           </ul>
-          <button onClick={clearSelection} className="mt-4 w-full bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">
+          <button
+            onClick={clearSelection}
+            className="mt-4 w-full bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400"
+          >
             Clear Selection
           </button>
         </div>
 
         {/* Compound details + form */}
         <div className="md:w-2/3 w-full border p-4 rounded">
-          <h2 className="font-semibold mb-4">{editMode ? "Edit Compound" : "Add New Compound"}</h2>
+          <h2 className="font-semibold mb-4">
+            {editMode ? "Edit Compound" : "Add New Compound"}
+          </h2>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
@@ -1025,6 +1056,20 @@ export default function AdminPage() {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="sourcestring"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sources</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* NEW: Styled MultiSelect dropdown + chips */}
               <FormField
                 control={form.control}
@@ -1041,7 +1086,9 @@ export default function AdminPage() {
                         label={undefined}
                       />
                     </FormControl>
-                    <p className="text-xs text-gray-500 mt-1">Choose one or more categories (selected shown as chips).</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Choose one or more categories (selected shown as chips).
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -1062,7 +1109,7 @@ export default function AdminPage() {
                         className="h-4 w-4"
                       />
                       <label htmlFor="weight" className="text-sm">
-                        Weight present
+                        <p>&gt; 500 g/mol</p>
                       </label>
                     </div>
                   )}
@@ -1076,7 +1123,7 @@ export default function AdminPage() {
                       <input
                         id="plantSource"
                         type="checkbox"
-                        checked={!!field.value}
+                        checked={true}
                         onChange={(e) => field.onChange(e.target.checked)}
                         className="h-4 w-4"
                       />
@@ -1095,12 +1142,12 @@ export default function AdminPage() {
                       <input
                         id="animalSource"
                         type="checkbox"
-                        checked={!!field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
+                        checked={true} // Always checked
+                        readOnly // Prevent user interaction
                         className="h-4 w-4"
                       />
                       <label htmlFor="animalSource" className="text-sm">
-                        Animal source
+                        Filter using other properties
                       </label>
                     </div>
                   )}
@@ -1121,8 +1168,7 @@ export default function AdminPage() {
                           <Input
                             {...field}
                             value={field.value ?? ""}
-                            placeholder={"Enter plant name" }
-                            
+                            placeholder={"Enter plant name"}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1138,13 +1184,16 @@ export default function AdminPage() {
                     const animalSource = form.getValues("animalSource");
                     return (
                       <FormItem>
-                        <FormLabel>Animal Source Name</FormLabel>
+                        <FormLabel>Label : Ornamental or Medicinal</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             value={field.value ?? ""}
-                            placeholder={animalSource ? "Enter animal name" : "Enable Animal source to set name"}
-                            
+                            placeholder={
+                              animalSource
+                                ? "Copy Paste the exact text in the label"
+                                : "Copy Paste the exact text in the label"
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -1155,9 +1204,15 @@ export default function AdminPage() {
               </div>
 
               <div className="flex items-center gap-4">
-                <Button type="submit">{editMode ? "Save Changes" : "Add Compound"}</Button>
+                <Button type="submit">
+                  {editMode ? "Save Changes" : "Add Compound"}
+                </Button>
                 {editMode && (
-                  <Button type="button" variant="outline" onClick={clearSelection}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={clearSelection}
+                  >
                     Cancel Edit
                   </Button>
                 )}
@@ -1176,7 +1231,9 @@ export default function AdminPage() {
       <div className="mb-6 space-y-4">
         <div className="flex gap-4 items-end">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">Add New Category</label>
+            <label className="block text-sm font-medium mb-1">
+              Add New Category
+            </label>
             <Input
               type="text"
               placeholder="Enter category name..."
@@ -1184,9 +1241,14 @@ export default function AdminPage() {
               onChange={(e) => setNewCategory(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && addCategory()}
             />
-            <p className="text-xs text-gray-500 mt-1">Category will be capitalized and trimmed automatically</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Category will be capitalized and trimmed automatically
+            </p>
           </div>
-          <Button onClick={addCategory} disabled={categoriesLoading || !newCategory.trim()}>
+          <Button
+            onClick={addCategory}
+            disabled={categoriesLoading || !newCategory.trim()}
+          >
             Add Category
           </Button>
         </div>
@@ -1211,23 +1273,48 @@ export default function AdminPage() {
       ) : filteredCategories.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-gray-500">
-            {categories.length === 0 ? "No categories found. Add your first category above." : "No categories match your search criteria."}
+            {categories.length === 0
+              ? "No categories found. Add your first category above."
+              : "No categories match your search criteria."}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredCategories.map((category) => (
-              <div key={category.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                <span className="font-medium text-gray-800">{category.name}</span>
-                <Button variant="destructive" size="sm" onClick={() => deleteCategory(category.id, category.name)} className="ml-2">Delete</Button>
+              <div
+                key={category.id}
+                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <span className="font-medium text-gray-800">
+                  {category.name}
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => deleteCategory(category.id, category.name)}
+                  className="ml-2"
+                >
+                  Delete
+                </Button>
               </div>
             ))}
           </div>
 
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="font-semibold text-blue-800 mb-2">Categories Summary</h3>
-            <p className="text-blue-700">Total Categories: <strong>{categories.length}</strong>{categorySearchTerm && <span> | Showing: <strong>{filteredCategories.length}</strong> filtered results</span>}</p>
+            <h3 className="font-semibold text-blue-800 mb-2">
+              Categories Summary
+            </h3>
+            <p className="text-blue-700">
+              Total Categories: <strong>{categories.length}</strong>
+              {categorySearchTerm && (
+                <span>
+                  {" "}
+                  | Showing: <strong>{filteredCategories.length}</strong>{" "}
+                  filtered results
+                </span>
+              )}
+            </p>
           </div>
         </div>
       )}
@@ -1245,28 +1332,64 @@ export default function AdminPage() {
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">User Email</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">User ID</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Protein Target</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Ligand Target</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Active Site Docking</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Blind Docking</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Created At</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Status</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  User Email
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  User ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Protein Target
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Ligand Target
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Active Site Docking
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Blind Docking
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Created At
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody>
               {requests.map((req) => (
                 <tr key={req.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-4 py-2">{req.userEmail || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{req.userId || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{req.proteinTarget || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{req.ligandTarget || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{req.activeSiteDocking ? "Yes" : "No"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{req.blindDocking ? "Yes" : "No"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{formatTimestamp(req.createdAt)}</td>
                   <td className="border border-gray-300 px-4 py-2">
-                    <select value={req.status} onChange={(e) => updateRequestStatus(req.id, e.target.value)} className="border rounded px-2 py-1">
+                    {req.userEmail || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {req.userId || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {req.proteinTarget || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {req.ligandTarget || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {req.activeSiteDocking ? "Yes" : "No"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {req.blindDocking ? "Yes" : "No"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {formatTimestamp(req.createdAt)}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <select
+                      value={req.status}
+                      onChange={(e) =>
+                        updateRequestStatus(req.id, e.target.value)
+                      }
+                      className="border rounded px-2 py-1"
+                    >
                       <option value="pending">Pending</option>
                       <option value="approved">Approved</option>
                       <option value="rejected">Rejected</option>
@@ -1287,7 +1410,13 @@ export default function AdminPage() {
       <h1 className="text-2xl font-bold mb-4">Users</h1>
 
       <div className="mb-4">
-        <Input type="text" placeholder="Search by name or ID..." value={userSearchTerm} onChange={(e) => setUserSearchTerm(e.target.value)} className="max-w-sm" />
+        <Input
+          type="text"
+          placeholder="Search by name or ID..."
+          value={userSearchTerm}
+          onChange={(e) => setUserSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
 
       {filteredUsers.length === 0 ? (
@@ -1297,21 +1426,63 @@ export default function AdminPage() {
           <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">ID</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Name</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Email</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Admin</th>
-                <th className="border border-gray-300 px-4 py-2 text-left text-black">Created At</th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Name
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Email
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Admin
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Created At
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Salutation
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Location
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Role
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left text-black">
+                  Organization
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((u) => (
                 <tr key={u.id} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-4 py-2">{u.id}</td>
-                  <td className="border border-gray-300 px-4 py-2">{u.name || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{u.email || "-"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{u.admin ? "Yes" : "No"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{formatTimestamp(u.createdAt)}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.name || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.email || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.admin ? "Yes" : "No"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {formatTimestamp(u.createdAt)}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.salutation}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.location}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.role}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {u.organization}
+                  </td>
                 </tr>
               ))}
             </tbody>

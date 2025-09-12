@@ -36,6 +36,7 @@ type Phytocompound = {
   link1?: string | null;
   link2?: string | null;
   categories?: string[];
+  sourcestring ?:string;
   plantName?: string | null;
   animalName?: string | null;
   weight?: boolean;
@@ -43,7 +44,7 @@ type Phytocompound = {
 
 // Plant / Animal categories (for dropdown filter)
 const PLANT_CATEGORIES = ["Tree", "Shrub", "Herb", "Climber", "Creeper"];
-const ANIMAL_CATEGORIES = ["Mammal", "Bird", "Fish", "Reptile", "Amphibian", "Insect"];
+const ANIMAL_CATEGORIES = ["Medicinal" , "Ornamental"];
 
 export default function SearchPage() {
   // Lists
@@ -222,8 +223,8 @@ export default function SearchPage() {
             <Select value={weightFilter} onValueChange={(v) => setWeightFilter(v || "all")}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Weight" /></SelectTrigger>
               <SelectContent className="z-50">
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="with"><p>&gt; 500 g/mol</p></SelectItem>
+                <SelectItem value="all">All weights</SelectItem>
+                                <SelectItem value="with"><p>&gt; 500 g/mol</p></SelectItem>
                 <SelectItem value="without"><p>&lt; 500 g/mol</p></SelectItem>
               </SelectContent>
             </Select>
@@ -245,7 +246,7 @@ export default function SearchPage() {
             <Select value={selectedAnimalCategory} onValueChange={(v) => setSelectedAnimalCategory(v || "all")}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Animal category" /></SelectTrigger>
               <SelectContent className="z-50">
-                <SelectItem value="all">All Animal Categories</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {ANIMAL_CATEGORIES.map((ac) => (
                   <SelectItem key={ac} value={ac}>{ac}</SelectItem>
                 ))}
@@ -295,7 +296,7 @@ export default function SearchPage() {
                   {selectedCompound.iupacName && <div><strong>IUPAC:</strong> {selectedCompound.iupacName}</div>}
                   {selectedCompound.smiles && <div><strong>SMILES:</strong> {selectedCompound.smiles}</div>}
                   {selectedCompound.plantName && <div><strong>Plant:</strong> {selectedCompound.plantName}</div>}
-                  {selectedCompound.animalName && <div><strong>Animal:</strong> {selectedCompound.animalName}</div>}
+                  {selectedCompound.sourcestring && <div><strong>Sources:</strong> {selectedCompound.sourcestring}</div>}
                   {selectedCompound.link1 && <div><strong>Link 1:</strong> <a href={selectedCompound.link1} target="_blank" rel="noreferrer" className="text-primary underline">{selectedCompound.link1}</a></div>}
                   {selectedCompound.link2 && <div><strong>Link 2:</strong> <a href={selectedCompound.link2} target="_blank" rel="noreferrer" className="text-primary underline">{selectedCompound.link2}</a></div>}
                   <Separator className="my-2" />
