@@ -23,7 +23,11 @@ export function Navbar() {
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="font-extrabold text-2xl tracking-tight text-primary">
-          PhytoDB
+           <img
+      src="https://res.cloudinary.com/ddljq4uyx/image/upload/v1758388257/vitlogo-freelogovectors.net__coyazr.png"
+      alt="Logo"
+      className="w-24 h-24 object-contain"
+    />
         </Link>
 
         {/* Desktop Menu */}
