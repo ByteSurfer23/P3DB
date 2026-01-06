@@ -1163,7 +1163,7 @@ export default function AdminPage() {
                     const plantSource = form.getValues("plantSource");
                     return (
                       <FormItem>
-                        <FormLabel>Plant Source Name</FormLabel>
+                        <FormLabel>Classification of the Plant</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
