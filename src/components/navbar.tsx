@@ -29,7 +29,7 @@ export function Navbar() {
       className="w-24 h-24 object-contain"
     />
         </Link>
-
+        <div><p className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-primary">Pan-PhytoDB</p></div>
         {/* Desktop Menu */}
         <NavigationMenu className="hidden md:flex flex-1 justify-end items-center space-x-4">
           <NavigationMenuList className="flex items-center gap-2">

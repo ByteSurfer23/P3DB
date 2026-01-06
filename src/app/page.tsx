@@ -71,10 +71,11 @@ export default function Home() {
           className="flex flex-col items-center max-w-4xl"
         >
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 text-primary">
-            Welcome to PhytoDB
+            Welcome to Pan-PhytoDB
           </h1>
           <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground max-w-2xl mb-8">
-            A seamless way to explore phytocompounds and accelerate your research
+            Accelerate pancreatitis research with seamless access to promising
+            phytocompounds
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -117,7 +118,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-4xl md:text-5xl font-extrabold mb-4 text-white drop-shadow-lg"
           >
-           Your Research, Simplified
+            Your Research, Simplified
           </motion.h2>
 
           <motion.p
@@ -127,8 +128,8 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-white max-w-3xl mb-12 mx-auto drop-shadow"
           >
-           Search phytocompounds, filter results, and run docking requests with just a few clicks
-
+            Search phytocompounds, filter results, and run docking requests with
+            just a few clicks
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mx-auto">
@@ -144,9 +145,7 @@ export default function Home() {
                 <div className="bg-primary p-4 rounded-full mb-4">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
-                  {feature.title}
-                </h3>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">
                   {feature.description}
                 </p>
@@ -175,7 +174,8 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-8 mx-auto"
           >
-            Sign up today to explore all the powerful features and gain more knowledge about Phytocompounds.
+            Sign up today to explore all the powerful features and gain more
+            knowledge about Phytocompounds.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
